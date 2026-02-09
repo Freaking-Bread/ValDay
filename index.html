@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Valentine's Day</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, #1a0a1e 0%, #2d1b3d 50%, #1a0a1e 100%);
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+            transition: background 1s ease;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400"><defs><filter id="glow"><feGaussianBlur stdDeviation="2"/></filter></defs><g opacity="0.15" fill="%23dc143c"><path d="M200 50 Q180 30 160 50 Q140 70 160 90 L200 130 L240 90 Q260 70 240 50 Q220 30 200 50 Z"/><path d="M100 150 Q85 135 70 150 Q55 165 70 180 L100 210 L130 180 Q145 165 130 150 Q115 135 100 150 Z"/><path d="M300 200 Q285 185 270 200 Q255 215 270 230 L300 260 L330 230 Q345 215 330 200 Q315 185 300 200 Z"/></g></svg>');
+            background-size: 600px 600px;
+            opacity: 0.4;
+            pointer-events: none;
+            z-index: 0;
+            transition: opacity 1s ease;
+        }
+
+        body.finale-mode {
+            background: #000;
+        }
+
+        body.finale-mode::before {
+            opacity: 0;
+        }
+
+        body.dark-mode {
+            background: #000;
+        }
+
+        body.dark-mode::before {
+            opacity: 0;
+        }
+
+        .flowers-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 250px;
+            background-image: url('https://media1.tenor.com/m/flA6W1T6i7wAAAAd/red.gif');
+            background-size: auto 100%;
+            background-position: bottom center;
+            background-repeat: repeat-x;
+            pointer-events: none;
+            z-index: 5;
+            opacity: 0;
+            transition: opacity 1.5s ease-in;
+        }
+
+        .flowers-footer.visible {
+            opacity: 1;
+        }
+
+        .photos-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10;
+            animation: fadeIn 1.5s ease-in;
+            transition: opacity 1s ease;
+        }
+
+        .photos-container.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .photo {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 3px solid rgba(255, 192, 203, 0.6);
+            object-fit: cover;
+            box-shadow: 0 8px 20px rgba(220, 20, 60, 0.4);
+            position: absolute;
+        }
+
+        .photo:first-child {
+            top: 0;
+            right: 60px;
+            z-index: 2;
+        }
+
+        .photo:last-child {
+            top: 30px;
+            right: 0;
+            z-index: 1;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+            padding-bottom: 280px;
+            text-align: center;
+        }
+
+        .step {
+            display: none;
+            animation: slideIn 0.8s ease-out;
+        }
+
+        .step.active {
+            display: block;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            text-shadow: 0 4px 15px rgba(220, 20, 60, 0.5);
+            letter-spacing: 1px;
+            transition: opacity 0.5s ease;
+        }
+
+        h1.fade-out {
+            opacity: 0;
+        }
+
+        .question {
+            font-size: 1.8rem;
+            margin-bottom: 3rem;
+            color: #ffb6c1;
+            transition: opacity 0.5s ease;
+        }
+
+        .question.fade-out {
+            opacity: 0;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            transition: opacity 0.5s ease;
+        }
+
+        .buttons.fade-out {
+            opacity: 0;
+        }
+
+        button {
+            padding: 1.2rem 2.5rem;
+            font-size: 1.3rem;
+            border: none;
+            border-radius: 50px;
+            background: linear-gradient(135deg, #ff1744, #dc143c);
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(220, 20, 60, 0.4);
+            font-family: 'Georgia', serif;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(220, 20, 60, 0.6);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .message {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            color: #ffb6c1;
+            animation: fadeIn 1s ease-in;
+        }
+
+        .kiss-cat {
+            position: fixed;
+            width: 400px;
+            height: 400px;
+            background-image: url('https://media.tenor.com/bvXwJ4I19ZQAAAAj/cat-cat-meme.gif');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            pointer-events: none;
+            z-index: 1000;
+            animation: kissCat 4s ease-out forwards;
+        }
+
+        @keyframes kissCat {
+            0% {
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 0;
+            }
+            15% {
+                transform: translate(-50%, -50%) scale(1.2);
+                opacity: 1;
+            }
+            85% {
+                transform: translate(-50%, -50%) scale(1.2);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 0;
+            }
+        }
+
+        .valentine-card {
+            background: rgba(40, 20, 50, 0.95);
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 15px 50px rgba(220, 20, 60, 0.5);
+            border: 2px solid rgba(255, 182, 193, 0.4);
+            animation: cardAppear 1.5s ease-out;
+            max-width: 500px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .valentine-card img {
+            width: 150px;
+            margin-bottom: 1.5rem;
+        }
+
+        .valentine-card p {
+            font-size: 1.6rem;
+            line-height: 1.8;
+            color: #ffb6c1;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes cardAppear {
+            0% {
+                opacity: 0;
+                transform: scale(0.5);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .grow-yes {
+            animation: growButton 0.3s ease-out forwards;
+        }
+
+        .grow-yes-more {
+            animation: growButtonMore 0.3s ease-out forwards;
+        }
+
+        @keyframes growButton {
+            to {
+                transform: scale(1.3);
+                padding: 1.5rem 3rem;
+                font-size: 1.5rem;
+            }
+        }
+
+        @keyframes growButtonMore {
+            to {
+                transform: scale(1.6);
+                padding: 1.8rem 3.5rem;
+                font-size: 1.7rem;
+            }
+        }
+
+        .grave-scene {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 2s ease-in;
+        }
+
+        .grave-scene.active {
+            display: flex;
+        }
+
+        .grave {
+            font-size: 5rem;
+            margin-bottom: 2rem;
+        }
+
+        .kitten-plea {
+            margin-top: 1rem;
+            animation: fadeIn 1s ease-in;
+        }
+
+        .kitten-plea img {
+            width: 150px;
+            border-radius: 10px;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .question {
+                font-size: 1.3rem;
+            }
+
+            button {
+                padding: 1rem 2rem;
+                font-size: 1.1rem;
+            }
+
+            .photos-container {
+                top: 10px;
+                right: 10px;
+            }
+
+            .photo {
+                width: 80px;
+                height: 80px;
+            }
+
+            .photo:first-child {
+                right: 40px;
+            }
+
+            .valentine-card {
+                padding: 2rem;
+            }
+
+            .valentine-card p {
+                font-size: 1.3rem;
+            }
+
+            .kiss-cat {
+                width: 250px;
+                height: 250px;
+            }
+
+            .flowers-footer {
+                height: 180px;
+            }
+
+            .container {
+                padding-bottom: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="flowers-footer" id="flowers"></div>
+
+    <div class="photos-container" id="photos">
+        <img src="https://sun6-22.userapi.com/s/v1/ig2/qNu0C-OStkV5-FJx5yCF7GAD9AFnQv3NPK3-O5ZuGspkCDGZOd0WFxteNXFpK5DssaExgRo_y9s3fjGyY1A1--Yl.jpg?quality=95&as=32x43,48x64,72x96,108x144,160x213,240x320,360x480,480x640,540x720,640x853,720x960,960x1280&from=bu&cs=960x0" alt="Photo 1" class="photo">
+        <img src="https://sun9-43.userapi.com/s/v1/ig2/X9USXWzjkaBT2wL-GxDr57KxbFqFQkaPq2GwiHkhFUsluZ4751Hr34GnxmuWL1ujC0vmobO8IL0k2LKHh4tnYQ2c.jpg?quality=95&as=32x43,48x64,72x96,108x144,160x213,240x320,360x480,480x640,540x720,640x853,720x960,960x1280&from=bu&cs=960x0" alt="Photo 2" class="photo">
+    </div>
+
+    <div class="container">
+        <div class="step active" id="step1">
+            <h1 id="step1-title">Привет, ты Томирис?</h1>
+            <div class="buttons" id="step1-buttons">
+                <button onclick="answerStep1(true)">Да</button>
+                <button onclick="answerStep1(false)">Нет</button>
+            </div>
+            <div class="message" id="msg1"></div>
+        </div>
+
+        <div class="step" id="step2">
+            <h1 id="step2-title">Ответьте на следующий вопрос</h1>
+            <p class="question" id="step2-question">Медвежонок или ласточка?</p>
+            <div class="buttons" id="step2-buttons">
+                <button onclick="answerStep2(false)">Медвежонок</button>
+                <button onclick="answerStep2(true)">Ласточка</button>
+            </div>
+            <div class="message" id="msg2"></div>
+        </div>
+
+        <div class="step" id="step3">
+            <h1>Вы влюблены?</h1>
+            <div class="buttons">
+                <button onclick="answerStep3(true)">Да</button>
+                <button onclick="answerStep3(false)">Нет</button>
+            </div>
+            <div class="message" id="msg3"></div>
+        </div>
+
+        <div class="step" id="step4">
+            <h1>Will you be my Valentine?</h1>
+            <div class="kitten-plea">
+                <img src="https://media1.tenor.com/m/c3aeR9N-E14AAAAd/pretty-please-beg.gif" alt="Please">
+            </div>
+            <div class="buttons">
+                <button id="yesBtn" onclick="answerStep4(true)">Да</button>
+                <button id="noBtn" onclick="handleNo()">Нет</button>
+            </div>
+        </div>
+
+        <div class="step grave-scene" id="grave">
+            <div class="grave">🪦</div>
+        </div>
+
+        <div class="step" id="step5">
+            <div class="valentine-card">
+                <img src="https://media.tenor.com/VIChDQ6ejRQAAAAj/jumping-bear-hearts-no-png.gif" alt="Bear">
+                <p>С Днем Святого Валентина, солнышко!<br>Ты моя валентинка ♥</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let noClickCount = 0;
+
+        function showStep(stepId) {
+            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+            document.getElementById(stepId).classList.add('active');
+        }
+
+        function answerStep1(isYes) {
+            if (isYes) {
+                showStep('step2');
+            } else {
+                const title = document.getElementById('step1-title');
+                const buttons = document.getElementById('step1-buttons');
+                
+                title.classList.add('fade-out');
+                buttons.classList.add('fade-out');
+                
+                setTimeout(() => {
+                    title.style.display = 'none';
+                    buttons.style.display = 'none';
+                    document.getElementById('msg1').textContent = 'Оу, но этот сайт был создан только для Томирис. Извините!';
+                }, 500);
+            }
+        }
+
+        function answerStep2(isSwallow) {
+            if (isSwallow) {
+                createKissCat();
+                setTimeout(() => showStep('step3'), 4000);
+            } else {
+                const title = document.getElementById('step2-title');
+                const question = document.getElementById('step2-question');
+                const buttons = document.getElementById('step2-buttons');
+                
+                title.classList.add('fade-out');
+                question.classList.add('fade-out');
+                buttons.classList.add('fade-out');
+                
+                setTimeout(() => {
+                    title.style.display = 'none';
+                    question.style.display = 'none';
+                    buttons.style.display = 'none';
+                    document.getElementById('msg2').textContent = 'Вы не Томирис!';
+                }, 500);
+            }
+        }
+
+        function answerStep3(isYes) {
+            const msg = isYes ? 'Вас тоже любят.' : 'А в вас влюблены!';
+            document.getElementById('msg3').textContent = msg;
+            setTimeout(() => showStep('step4'), 2000);
+        }
+
+        function handleNo() {
+            noClickCount++;
+            const yesBtn = document.getElementById('yesBtn');
+            const noBtn = document.getElementById('noBtn');
+
+            if (noClickCount === 1) {
+                yesBtn.classList.remove('grow-yes');
+                yesBtn.classList.add('grow-yes');
+                noBtn.textContent = 'Are you sure?';
+            } else if (noClickCount === 2) {
+                yesBtn.classList.remove('grow-yes');
+                yesBtn.classList.add('grow-yes-more');
+                noBtn.textContent = 'Отказа я не переживу...';
+            } else {
+                document.body.classList.add('dark-mode');
+                document.getElementById('photos').classList.add('hidden');
+                showStep('grave');
+            }
+        }
+
+        function answerStep4(isYes) {
+            if (isYes) {
+                document.body.classList.add('finale-mode');
+                document.getElementById('flowers').classList.add('visible');
+                setTimeout(() => showStep('step5'), 500);
+            }
+        }
+
+        function createKissCat() {
+            const kissCat = document.createElement('div');
+            kissCat.className = 'kiss-cat';
+            document.body.appendChild(kissCat);
+            setTimeout(() => kissCat.remove(), 4000);
+        }
+    </script>
+</body>
+</html>
